@@ -1,3 +1,4 @@
+"""main.py - program utama Pencatat Pengeluaran Harian."""
 import os
 from datetime import date
 
@@ -13,16 +14,18 @@ PATH_LAPORAN = os.path.join(FOLDER, "laporan", "laporan_pengeluaran.txt")
 
 DATA_AWAL = (
     "2026-10-01;Makanan;Nasi goreng;15000\n"
-    "2026-10-01;Transport;Ojek online;8000\n"
+    "2026-10-01;Transport;Ojek online;22000\n"
     "2026-10-02;Makanan;Makan siang;20000\n"
     "2026-10-02;Belanja;Alat tulis;35000\n"
     "2026-10-03;Hiburan;Tiket bioskop;50000\n"
-    "2026-10-04;Minuman;Kopi;18000\n"
-    "2026-10-05;Transport;Bensin;20000\n"
+    "2026-10-04;Makanan;Kopi;18000\n"
+    "2026-10-05;Transport;Bensin;40000\n"
     "2026-10-05;Belanja;Buku catatan;27000\n"
 )
 
+
 def siapkan_file():
+    """Membuat folder dan file data awal (mode x) bila belum ada."""
     os.makedirs(os.path.dirname(PATH_DATA), exist_ok=True)
     os.makedirs(os.path.dirname(PATH_LAPORAN), exist_ok=True)
     if buat_file_data(PATH_DATA, isi_awal=DATA_AWAL):
@@ -30,6 +33,7 @@ def siapkan_file():
 
 
 def menu_tambah():
+    """Meminta input pengguna lalu menyimpan satu catatan (mode a)."""
     tanggal = input("Tanggal (YYYY-MM-DD, kosong = hari ini): ").strip() or date.today().isoformat()
     kategori = input("Kategori   : ")
     keterangan = input("Keterangan : ")
@@ -44,6 +48,7 @@ def menu_tambah():
 
 
 def menu_tampilkan():
+    """Menampilkan semua catatan diurutkan berdasarkan tanggal."""
     daftar = sorted(baca_data(PATH_DATA), key=lambda p: p.tanggal)
     for nomor, p in enumerate(daftar, start=1):
         print(f"{nomor:>2}. {p.tanggal} {p.kategori:<10} {p.keterangan:<18} {format_rupiah(p.jumlah):>10}")
@@ -51,12 +56,14 @@ def menu_tampilkan():
 
 
 def menu_cari():
+    """Mencari catatan berdasarkan kategori."""
     kategori = input("Kategori yang dicari: ").strip().title()
     for p in AnalisisPengeluaran(baca_data(PATH_DATA)).cari(kategori=kategori):
         print(f"  {p.tanggal} {p.keterangan:<18} {format_rupiah(p.jumlah):>10}")
 
 
 def menu_laporan():
+    """Membuat laporan (mode w) lalu menampilkannya di layar."""
     teks = susun_laporan(AnalisisPengeluaran(baca_data(PATH_DATA)))
     tulis_laporan(PATH_LAPORAN, teks)
     print(baca_teks(PATH_LAPORAN))
